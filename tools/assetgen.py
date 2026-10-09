@@ -20,7 +20,7 @@ def load_yaml(text):
 
 ROOT = Path(__file__).resolve().parent.parent
 MANIFEST_DIR = ROOT / "config" / "assets"
-GBAGFX = ROOT / "tools" / "gbagfx" / "gbagfx"
+GBAGFX = (ROOT / "tools" / "gbagfx" / "gbagfx.exe").resolve()
 VERSIONS = ("us", "jp", "eu")
 SOURCE_EXT = {"tiles4": "png", "tiles8": "png", "palette": "pal", "tilemap": "bin", "raw": "bin", "sprite_sheet": "png",
               "glyphs": "png", **m4a_assets.SOURCE_EXT}
@@ -43,7 +43,7 @@ class ManifestError(Exception):
 class Manifest:
     def __init__(self, path):
         self.path = Path(path)
-        with self.path.open() as handle:
+        with self.path.open(encoding="utf-8") as handle:
             doc = load_yaml(handle)
         for key in ("group", "types", "objects", "entries"):
             if key not in doc:
@@ -456,7 +456,7 @@ def write_jasc(path, data):
     for offset in range(0, len(data), 2):
         entry = data[offset] | (data[offset + 1] << 8)
         lines.append("%d %d %d" % gba_to_rgb(entry))
-    Path(path).write_text("\r\n".join(lines) + "\r\n")
+    Path(path).write_text("\n".join(lines) + "\n", encoding="ascii", newline="")
 
 
 def glyph_geometry(entry, size):

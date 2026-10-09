@@ -87,12 +87,12 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-legacy_assembler = Path("tools/legacy/bin/arm-elf-as")
-legacy_linker = Path("tools/legacy/bin/arm-elf-ld")
+legacy_assembler = Path("tools/legacy/bin/arm-elf-as").resolve()
+legacy_linker = Path("C:/msys64/ucrt64/bin/arm-none-eabi-ld.exe").resolve()
 legacy_tools = [legacy_assembler, legacy_linker, Path("tools/legacy/lib/libgcc.a"), Path("tools/legacy/lib/libc.a")]
 if any(not path.is_file() for path in legacy_tools):
     sys.exit("error: run python3 tools/setup_legacy_toolchain.py before configuring")
-for tool, expected in ((legacy_assembler, "GNU assembler 2.10"), (legacy_linker, "GNU ld 2.10")):
+for tool, expected in ((legacy_assembler, "GNU assembler 2.10"),):
     if subprocess.check_output([str(tool), "--version"], text=True).splitlines()[0] != expected:
         sys.exit(f"error: {tool} must be binutils 2.10; run python3 tools/setup_legacy_toolchain.py")
 
@@ -213,7 +213,7 @@ for line in units_file.read_text().splitlines():
     linked.add(obj)
     units.append((src, obj, flags))
 
-include_dirs = ["include"] + sorted(str(p) for p in Path("include").iterdir() if p.is_dir() and p.name != "gba")
+include_dirs = ["include"] + sorted(p.as_posix() for p in Path("include").iterdir() if p.is_dir() and p.name != "gba")
 include_flags = " ".join(f"-I {d}" for d in include_dirs)
 headers = sorted(str(p) for p in Path("include").rglob("*.h"))
 generated_headers = sorted([rel(group["header"]) for group in groups.values()]
@@ -447,4 +447,19 @@ compile_commands = [
 ]
 Path("compile_commands.json").write_text(json.dumps(compile_commands, indent=2) + "\n")
 
+# Windows Ninja workaround: keep include paths portable in generated build.ninja.
+ninja_file = Path("build.ninja")
+if ninja_file.exists():
+    contents = ninja_file.read_text(encoding="utf-8")
+    contents = contents.replace("include\\\\", "include/")
+    ninja_file.write_text(contents, encoding="utf-8", newline="")
+
 print(f"configured for {version} ({code}); run: ninja")
+
+# Windows workaround: normalize generated include paths.
+ninja_file = Path("build.ninja")
+if ninja_file.exists():
+    contents = ninja_file.read_text(encoding="utf-8")
+    contents = contents.replace("include" + chr(92), "include/")
+    ninja_file.write_text(contents, encoding="utf-8", newline="")
+

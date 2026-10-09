@@ -31,7 +31,7 @@ def main():
     root = args.root.resolve()
     prefix = (args.prefix or root / 'tools/legacy').resolve()
     work = (args.build_dir or root / 'build/toolchain').resolve()
-    compiler = root / 'tools/agbcc/bin/old_agbcc'
+    compiler = root / 'tools/agbcc/bin/old_agbcc.exe'
     if not compiler.is_file():
         parser.error('install agbcc before setting up the legacy toolchain')
     if args.jobs < 1:
@@ -40,12 +40,15 @@ def main():
     log_path = work / 'setup.log'
     env = os.environ.copy()
     env.update(CC='cc -std=gnu89 -Wno-implicit-function-declaration -Wno-int-conversion', CFLAGS='-O2',
-               lt_cv_sys_max_cmd_len=str(os.sysconf('SC_ARG_MAX') * 3 // 4))
+               lt_cv_sys_max_cmd_len=str((os.sysconf('SC_ARG_MAX') * 3 // 4) if hasattr(os, 'sysconf') else 32768))
 
     def run(command, directory=work):
+        command = list(map(str, command))
+        if command[0].endswith('/configure') or command[0].endswith('\\configure'):
+            command.insert(0, 'bash')
         with log_path.open('a') as log:
-            print(shlex.join(map(str, command)), file=log, flush=True)
-            subprocess.run(list(map(str, command)), cwd=directory, env=env,
+            print(shlex.join(command), file=log, flush=True)
+            subprocess.run(command, cwd=directory, env=env,
                            stdout=log, stderr=subprocess.STDOUT, check=True)
 
     def fetch(name, urls, digest):
@@ -90,17 +93,19 @@ def main():
         replace(source / 'libiberty/strerror.c', 'extern int sys_nerr;', 'extern const int sys_nerr;')
     elif platform.system() == 'Linux':
         host = machine + '-pc-linux-gnu'
+    elif platform.system() == 'Windows':
+        host = machine + '-pc-mingw32'
     else:
-        parser.error('legacy toolchain setup supports Linux and macOS')
+        parser.error('unsupported host operating system')
     build = work / 'binutils-build'
     build.mkdir(exist_ok=True)
-    run([source / 'configure', '--host=' + host, '--build=' + host,
+    run(['bash', '../binutils-2.10/configure', '--host=' + host, '--build=' + host,
          '--target=arm-elf', '--disable-nls', '--disable-shared'], build)
     run(['make', '-j' + str(args.jobs), 'all-gas', 'all-ld'], build)
     (prefix / 'bin').mkdir(parents=True, exist_ok=True)
     assembler = prefix / 'bin/arm-elf-as'
-    shutil.copy2(build / 'gas/as-new', assembler)
-    shutil.copy2(build / 'ld/ld-new', prefix / 'bin/arm-elf-ld')
+    shutil.copy2(build / 'gas/as-new.exe', assembler)
+    shutil.copy2(build / 'ld/ld-new.exe', prefix / 'bin/arm-elf-ld')
 
     print('Rebuilding the runtime libraries for the legacy software-FP ABI', flush=True)
     archive = fetch('agbcc-' + AGBCC_REVISION + '.tar.gz',
