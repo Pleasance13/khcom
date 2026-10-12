@@ -23,6 +23,7 @@ typedef struct Mode {
 
 void ModeRequest(Mode* mode, s32 arg);
 void ModeUpdate();
+void UpdateDebugModeSelect();
 void ModeRequestHeapReset(Mode* mode, s32 arg);
 
 extern Mode gModeDebug;

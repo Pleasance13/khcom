@@ -71,6 +71,7 @@ static Mode* sDebugModes[] = {
     &gModeWorldwarp,
     &gModeMsTop,
     &gModeMapinspect,
+    &gModeRoguelike,
 };
 
 void ModeBlankDisplay() {
@@ -168,6 +169,8 @@ void DoSoftReset() {
 
 void ModeUpdate() {
     u8 displayHeld;
+
+    UpdateDebugModeSelect();
 
     if ((((GetKeysPressed() & START_BUTTON) && (GetKeysHeld() & SELECT_BUTTON) && (GetKeysHeld() & A_BUTTON) &&
              (GetKeysHeld() & B_BUTTON)) ||
@@ -277,7 +280,7 @@ void UpdateDebugModeSelect() {
 #ifdef VERSION_EU
                 gDebugModeIndex = 23;
 #else
-                gDebugModeIndex = 25;
+                gDebugModeIndex = 26;
 #endif
             }
 
@@ -290,7 +293,7 @@ void UpdateDebugModeSelect() {
 #ifdef VERSION_EU
             if (gDebugModeIndex > 23) {
 #else
-            if (gDebugModeIndex > 25) {
+            if (gDebugModeIndex > 26) {
 #endif
                 gDebugModeIndex = 0;
             }

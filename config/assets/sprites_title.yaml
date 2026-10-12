@@ -2466,7 +2466,24 @@ entries:
     address: 0x09748AF4
     size: 5810
     cell: [128, 16]
-    anchor: [0, 0]
+    anchor: [0, 0]    
+#- name: gTitleMenuEntryRogueTiles
+#  format: sprite_sheet
+#  align: 4
+#  cell: [128, 32]
+#  anchor: [0, 8]
+#  columns: 1
+#  animations: []
+#  frames:
+#  - symbol: gTitleMenuEntryRogueFrame0
+#    pieces:
+#    - [32x16, 0, 0]
+#    - [32x16, 32, 0]
+#    - [32x16, 64, 0]
+#    - [32x16, 96, 0]
+#  us:
+#    address: 0x09775CCC
+#    size: 1052
 - name: gTitleRikuLumiTiles
   format: sprite_sheet
   align: 4

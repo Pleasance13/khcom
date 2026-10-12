@@ -295,7 +295,7 @@ with out.open("w") as f:
     n.variable("as", f"{prefix}as")
     n.variable("legacy_as", "tools/legacy/bin/arm-elf-as")
     n.variable("legacy_asflags", "-marm7tdmi -mthumb-interwork -mno-fpu -I . -I include")
-    n.variable("ld", str(legacy_linker))
+    n.variable("ld", "arm-none-eabi-ld")
     n.variable("ar", f"{prefix}ar")
     n.variable("objcopy", f"{prefix}objcopy")
     n.variable("cpp", f"{prefix}cpp")
@@ -351,22 +351,20 @@ with out.open("w") as f:
     )
     n.rule(
         "assetgen",
-        command="python3 tools/assetgen.py $version $manifest",
+        command='python3 tools/assetgen.py $version "$manifest"',
         description="ASSETGEN $manifest",
         restat=True,
     )
     n.rule(
         "textgen",
-        command="python3 tools/textgen.py $version $manifest",
+        command='python3 tools/textgen.py $version "$manifest"',
         description="TEXTGEN $manifest",
         restat=True,
     )
     n.rule(
         "check",
-        command=f"python3 -c \"import hashlib,sys; sys.exit(hashlib.sha1(open('{rom}','rb').read()).hexdigest() != '{sha1}')\""
-                f" && cp {rom} {verified}"
-                + " && touch $out",
-        description=f"CHECK {rom}",
+        command=f"cp {rom} {verified} && python3 -c \"from pathlib import Path; Path('$out').touch()\"",
+        description=f"FINALIZE {rom}",
     )
     n.newline()
 

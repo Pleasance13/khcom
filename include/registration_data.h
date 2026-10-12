@@ -10,6 +10,7 @@ extern Mode gModeLang;
 #endif
 
 extern Mode gModeJiminy;
+extern Mode gModeRoguelike;
 extern TaskDesc gTaskDescMonsgage;
 extern TaskDesc gTaskDescBtlPopCb;
 extern TaskDesc gTaskDescBtlExp;

@@ -516,7 +516,10 @@ void TitleMenuMoveBasic(s16* choice) {
     s16 max;
     u16 keys;
 
-    max = (gGameState.flags & GAME_FLAG_SORA_CLEAR) ? TITLE_MENU_LINK_BATTLE : TITLE_MENU_CONTINUE;
+    max = (gGameState.flags & GAME_FLAG_SORA_CLEAR)
+        ? TITLE_MENU_LINK_BATTLE
+        : TITLE_MENU_ROGUE_MODE;
+
     keys = GetKeysPressed() & DPAD_UP;
 
     if (keys != 0) {

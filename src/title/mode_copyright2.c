@@ -9,6 +9,8 @@
 #include "display.h"
 #include "mode.h"
 #include "types.h"
+#include "gba/keys.h"
+#include "key.h"
 
 static u16 sCopyright2Timer;
 
@@ -29,7 +31,13 @@ void mode_copyright2_0(s32 arg) {
     sCopyright2Timer = 60;
 }
 
+
 void mode_copyright2_1() {
+    if (GetKeysPressed() & (A_BUTTON | START_BUTTON)) {
+        ModeRequest(&gModeTitle, 0);
+        return;
+    }
+
     if (!FadeIsActive()) {
         if (sCopyright2Timer != 0) {
             if (--sCopyright2Timer == 0) {

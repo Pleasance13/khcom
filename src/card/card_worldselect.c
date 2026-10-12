@@ -302,7 +302,9 @@ u8 UpdateMapSelectSetup(MapSelectWork* work, void* task) {
             TaskCreate(&work->tasks, &gTaskDescSELMAPEVKEY, &work->eventKeyArgs)->work;
     }
 
-    LoadMapSelectKindPalette(work->card->args.baseCardId, work);
+    if (work->card != NULL) {
+        LoadMapSelectKindPalette(work->card->args.baseCardId, work);
+    }
     SetTaskUpdate(task, (TaskUpdateFunc)UpdateMapSelectSlideIn);
     return 1;
 }
@@ -821,7 +823,7 @@ void MapSelect_2(MapSelectWork* work) {
                    work->tiles3, work->palette3, NULL, 0, 80);
     }
 
-    if (work->isEventDoor == TRUE) {
+    if (work->isEventDoor == TRUE && work->card != NULL) {
         switch (gMapCardDefs[work->card->args.baseCardId].backIndex) {
         case MAP_CARD_COLOR_NONE:
             break;

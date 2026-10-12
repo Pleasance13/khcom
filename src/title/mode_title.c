@@ -95,6 +95,9 @@ void TitleExitToChoice() {
         SetupRikuNewGame();
         ModeRequest(&gModeMenuNew, 0);
         return;
+    case TITLE_MENU_ROGUE_MODE:
+        ModeRequest(&gModeRoguelike, 0);
+        return;
     case TITLE_MENU_NEW_GAME:
     default:
         ModeRequest(&gModeMenuNew, 0);

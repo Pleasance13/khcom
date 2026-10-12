@@ -13,6 +13,8 @@
 #include "save_api.h"
 #include "save_types.h"
 #include "types.h"
+#include "gba/keys.h"
+#include "key.h"
 
 #ifndef VERSION_JP
 static u8 sCopyrightExtraScreen;
@@ -92,6 +94,12 @@ void mode_copyright1_0(s32 arg) {
 }
 
 void mode_copyright1_1() {
+    if (!sCopyrightSaveCorrupted &&
+        (GetKeysPressed() & (A_BUTTON | START_BUTTON))) {
+        ModeRequest(&gModeCopyright2, 0);
+        return;
+    }
+
     if (sCopyrightSaveCorrupted) {
         ModeRequest(&gModeMenuMsg, 0);
     } else if (!FadeIsActive()) {

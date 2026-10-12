@@ -24,6 +24,7 @@ mode_chksnd.c
 mode_chkeff.c
 mode_chkmov.c
 mode_dummy.c
+roguelike/mode_roguelike.c
 mode_debflag.c
 mode_vsbattle.c
 formation_data.c
